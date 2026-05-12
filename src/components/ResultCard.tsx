@@ -3,28 +3,29 @@ import type { RollResult } from "../utils/roll";
 type ResultCardProps = {
   result: RollResult | null;
   copyStatus: "idle" | "copied" | "failed";
+  isRolling: boolean;
   onRollAgain: () => void;
   onCopy: () => void;
 };
 
-function ResultCard({ result, copyStatus, onRollAgain, onCopy }: ResultCardProps) {
+function ResultCard({ result, copyStatus, isRolling, onRollAgain, onCopy }: ResultCardProps) {
   if (!result) {
     return (
-      <section className="result-card empty-result" aria-labelledby="result-title">
+      <section className={`result-card empty-result${isRolling ? " is-rolling" : ""}`} aria-labelledby="result-title">
         <div className="section-label">
           <span aria-hidden="true">3</span>
           <h2 id="result-title">Recipe idea</h2>
         </div>
         <div className="empty-state">
-          <p className="empty-dice" aria-hidden="true">D6</p>
-          <p>Choose a dish mode and roll to get a dinner idea.</p>
+          <p className="empty-dice" aria-hidden="true">{isRolling ? "??" : "D6"}</p>
+          <p>{isRolling ? "Rolling a dinner idea..." : "Choose a dish mode and roll to get a dinner idea."}</p>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="result-card" aria-labelledby="result-title">
+    <section className={`result-card${isRolling ? " is-rolling" : ""}`} aria-labelledby="result-title">
       <div className="section-label">
         <span aria-hidden="true">3</span>
         <h2 id="result-title">Recipe idea</h2>
@@ -59,10 +60,10 @@ function ResultCard({ result, copyStatus, onRollAgain, onCopy }: ResultCardProps
         </div>
 
         <div className="result-actions">
-          <button className="secondary-button" type="button" onClick={onRollAgain}>
-            Roll again
+          <button className="secondary-button" type="button" disabled={isRolling} onClick={onRollAgain}>
+            {isRolling ? "Rolling..." : "Roll again"}
           </button>
-          <button className="secondary-button copy-button" type="button" onClick={onCopy}>
+          <button className="secondary-button copy-button" type="button" disabled={isRolling} onClick={onCopy}>
             Copy result
           </button>
         </div>

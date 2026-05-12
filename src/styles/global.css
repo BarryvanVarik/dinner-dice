@@ -100,6 +100,10 @@ dd {
   transform: rotate(8deg);
 }
 
+.dice-badge.is-rolling {
+  animation: dice-tumble 760ms cubic-bezier(0.2, 0.78, 0.32, 1.12);
+}
+
 .dice-badge span {
   position: absolute;
   width: 20px;
@@ -247,6 +251,16 @@ dd {
   background: var(--card-raised);
 }
 
+.category-lock.is-rolling {
+  border-color: rgba(239, 63, 50, 0.72);
+  animation: card-rattle 320ms linear infinite;
+  box-shadow: 0 0 0 1px rgba(239, 63, 50, 0.14), 0 14px 36px rgba(239, 63, 50, 0.12);
+}
+
+.category-lock.is-locked {
+  border-color: rgba(240, 182, 74, 0.38);
+}
+
 .category-lock-top {
   display: flex;
   justify-content: space-between;
@@ -291,6 +305,30 @@ dd {
   line-height: 1;
 }
 
+.rolling-value {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 48px;
+}
+
+.rolling-value span {
+  width: 12px;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--accent);
+  animation: rolling-pip 520ms ease-in-out infinite;
+}
+
+.rolling-value span:nth-child(2) {
+  animation-delay: 90ms;
+  background: var(--gold);
+}
+
+.rolling-value span:nth-child(3) {
+  animation-delay: 180ms;
+}
+
 .roll-button {
   width: 100%;
   min-height: 62px;
@@ -308,6 +346,10 @@ dd {
   position: sticky;
   top: 18px;
   padding: 18px;
+}
+
+.result-card.is-rolling {
+  animation: result-pulse 760ms ease-in-out infinite;
 }
 
 .empty-state {
@@ -512,6 +554,86 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+@keyframes dice-tumble {
+  0% {
+    transform: rotate(8deg) scale(1);
+  }
+
+  24% {
+    transform: rotate(-18deg) scale(1.08);
+  }
+
+  48% {
+    transform: rotate(24deg) scale(0.98);
+  }
+
+  74% {
+    transform: rotate(382deg) scale(1.05);
+  }
+
+  100% {
+    transform: rotate(368deg) scale(1);
+  }
+}
+
+@keyframes card-rattle {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  20% {
+    transform: translate(-1px, 1px) rotate(-0.7deg);
+  }
+
+  40% {
+    transform: translate(1px, -1px) rotate(0.7deg);
+  }
+
+  60% {
+    transform: translate(-1px, -1px) rotate(0.5deg);
+  }
+
+  80% {
+    transform: translate(1px, 1px) rotate(-0.5deg);
+  }
+}
+
+@keyframes rolling-pip {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+@keyframes result-pulse {
+  0%,
+  100% {
+    border-color: var(--line);
+  }
+
+  50% {
+    border-color: rgba(239, 63, 50, 0.78);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}
+
 @media (max-width: 960px) {
   .dish-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -672,6 +794,14 @@ button:focus-visible {
     min-height: 34px;
     font-size: 1.08rem;
     line-height: 1.05;
+  }
+
+  .rolling-value {
+    min-height: 34px;
+  }
+
+  .rolling-value span {
+    width: 10px;
   }
 
   .roll-button {

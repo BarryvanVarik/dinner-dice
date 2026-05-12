@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DishSelector from "./components/DishSelector";
 import IngredientEditor from "./components/IngredientEditor";
 import ResultCard from "./components/ResultCard";
@@ -7,6 +7,7 @@ import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./dat
 import { createCopyText, rollDish, type RollResult } from "./utils/roll";
 
 const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
+const ROLL_ANIMATION_MS = 760;
 
 function App() {
   const [dishTypes, setDishTypes] = useState<DishType[]>(loadDishTypes);
@@ -14,22 +15,45 @@ function App() {
   const [result, setResult] = useState<RollResult | null>(null);
   const [lockedCategories, setLockedCategories] = useState<Set<string>>(new Set());
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
+  const [isRolling, setIsRolling] = useState(false);
+  const rollTimerRef = useRef<number | null>(null);
 
   const selectedDish = useMemo(
     () => dishTypes.find((dishType) => dishType.id === selectedDishId) ?? dishTypes[0],
     [dishTypes, selectedDishId]
   );
 
+  useEffect(() => {
+    return () => {
+      if (rollTimerRef.current) {
+        window.clearTimeout(rollTimerRef.current);
+      }
+    };
+  }, []);
+
   function handleDishSelect(dishId: DishId) {
+    clearPendingRoll();
     setSelectedDishId(dishId);
     setResult(null);
     setLockedCategories(new Set());
     setCopyStatus("idle");
+    setIsRolling(false);
   }
 
   function handleRoll() {
-    setResult((currentResult) => rollDish(selectedDish, currentResult, lockedCategories));
+    if (isRolling) {
+      return;
+    }
+
+    clearPendingRoll();
     setCopyStatus("idle");
+    setIsRolling(true);
+
+    rollTimerRef.current = window.setTimeout(() => {
+      setResult((currentResult) => rollDish(selectedDish, currentResult, lockedCategories));
+      setIsRolling(false);
+      rollTimerRef.current = null;
+    }, ROLL_ANIMATION_MS);
   }
 
   function handleToggleLock(categoryId: string) {
@@ -60,6 +84,7 @@ function App() {
   }
 
   function handleSaveIngredients(updates: Record<string, string[]>) {
+    clearPendingRoll();
     const nextDishTypes = dishTypes.map((dishType) => {
       if (dishType.id !== selectedDishId) {
         return dishType;
@@ -79,9 +104,11 @@ function App() {
     setResult(null);
     setLockedCategories(new Set());
     setCopyStatus("idle");
+    setIsRolling(false);
   }
 
   function handleResetSelectedDish() {
+    clearPendingRoll();
     const defaultDish = defaultDishTypes.find((dishType) => dishType.id === selectedDishId);
 
     if (!defaultDish) {
@@ -97,6 +124,7 @@ function App() {
     setResult(null);
     setLockedCategories(new Set());
     setCopyStatus("idle");
+    setIsRolling(false);
   }
 
   return (
@@ -107,7 +135,7 @@ function App() {
           <h1>Dinner Dice</h1>
           <p className="subtitle">Roll your way into dinner</p>
         </div>
-        <div className="dice-badge" aria-hidden="true">
+        <div className={`dice-badge${isRolling ? " is-rolling" : ""}`} aria-hidden="true">
           <span />
           <span />
           <span />
@@ -123,6 +151,7 @@ function App() {
           dishType={selectedDish}
           result={result}
           lockedCategories={lockedCategories}
+          isRolling={isRolling}
           onRoll={handleRoll}
           onToggleLock={handleToggleLock}
         />
@@ -130,6 +159,7 @@ function App() {
         <ResultCard
           result={result}
           copyStatus={copyStatus}
+          isRolling={isRolling}
           onRollAgain={handleRoll}
           onCopy={handleCopy}
         />
@@ -142,6 +172,13 @@ function App() {
       />
     </main>
   );
+
+  function clearPendingRoll() {
+    if (rollTimerRef.current) {
+      window.clearTimeout(rollTimerRef.current);
+      rollTimerRef.current = null;
+    }
+  }
 }
 
 function loadDishTypes() {

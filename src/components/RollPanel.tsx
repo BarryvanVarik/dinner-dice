@@ -6,6 +6,7 @@ type RollPanelProps = {
   dishType: DishType;
   result: RollResult | null;
   lockedCategories: Set<string>;
+  isRolling: boolean;
   onRoll: () => void;
   onToggleLock: (categoryId: string) => void;
 };
@@ -14,6 +15,7 @@ function RollPanel({
   dishType,
   result,
   lockedCategories,
+  isRolling,
   onRoll,
   onToggleLock
 }: RollPanelProps) {
@@ -42,13 +44,14 @@ function RollPanel({
             pickCount={category.pickCount}
             rolledCategory={getRolledCategory(category.id)}
             isLocked={lockedCategories.has(category.id)}
+            isRolling={isRolling && !lockedCategories.has(category.id)}
             onToggleLock={onToggleLock}
           />
         ))}
       </div>
 
-      <button className="roll-button" type="button" onClick={onRoll}>
-        {result ? "Roll again" : "Roll dish"}
+      <button className="roll-button" type="button" disabled={isRolling} onClick={onRoll}>
+        {isRolling ? "Rolling..." : result ? "Roll again" : "Roll dish"}
       </button>
     </section>
   );
