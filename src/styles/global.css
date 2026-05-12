@@ -211,6 +211,7 @@ dd {
   grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
   gap: 18px;
   align-items: start;
+  margin-bottom: 18px;
 }
 
 .roll-panel,
@@ -421,6 +422,83 @@ dd {
   font-size: 0.92rem;
 }
 
+.ingredient-editor {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(28, 24, 25, 0.88);
+  box-shadow: var(--shadow);
+}
+
+.ingredient-editor summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  color: var(--ink);
+  font-weight: 950;
+  text-transform: uppercase;
+  list-style: none;
+  cursor: pointer;
+}
+
+.ingredient-editor summary::-webkit-details-marker {
+  display: none;
+}
+
+.ingredient-editor summary span:last-child {
+  color: var(--accent);
+  font-size: 0.86rem;
+}
+
+.editor-body {
+  padding: 0 18px 18px;
+}
+
+.editor-note {
+  margin-bottom: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.editor-field {
+  display: grid;
+  gap: 8px;
+}
+
+.editor-field span {
+  color: var(--muted-strong);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.editor-field textarea {
+  width: 100%;
+  min-height: 138px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--ink);
+  background: var(--bg-strong);
+  font: inherit;
+  line-height: 1.4;
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 button {
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
@@ -446,61 +524,241 @@ button:focus-visible {
   .result-card {
     position: static;
   }
+
+  .editor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
   .app-shell {
-    width: min(100% - 22px, 1180px);
-    padding-top: 18px;
+    width: min(100% - 18px, 1180px);
+    padding-top: 10px;
+    padding-bottom: 28px;
   }
 
   .hero {
-    grid-template-columns: 1fr;
-    padding-top: 8px;
+    grid-template-columns: minmax(0, 1fr) 54px;
+    gap: 12px;
+    padding: 6px 0 14px;
+  }
+
+  .eyebrow {
+    margin-bottom: 4px;
+    font-size: 0.68rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 14vw, 4.1rem);
+  }
+
+  .subtitle {
+    margin-top: 6px;
+    font-size: 1rem;
   }
 
   .dice-badge {
-    width: 82px;
-    order: -1;
-    border-width: 4px;
+    width: 54px;
+    border-width: 3px;
   }
 
   .dice-badge span {
-    width: 12px;
+    width: 8px;
   }
 
   .dice-badge span:nth-child(1) {
-    left: 16px;
-    top: 16px;
+    left: 11px;
+    top: 11px;
   }
 
   .dice-badge span:nth-child(2) {
-    right: 16px;
-    top: 16px;
+    right: 11px;
+    top: 11px;
   }
 
   .dice-badge span:nth-child(4) {
-    left: 16px;
-    bottom: 16px;
+    left: 11px;
+    bottom: 11px;
   }
 
   .dice-badge span:nth-child(5) {
-    right: 16px;
-    bottom: 16px;
+    right: 11px;
+    bottom: 11px;
   }
 
-  .dish-grid,
-  .category-grid,
-  .roll-list {
-    grid-template-columns: 1fr;
+  .section-label {
+    margin-bottom: 9px;
+  }
+
+  .section-label span {
+    width: 24px;
+    font-size: 0.82rem;
+  }
+
+  .section-label h2 {
+    font-size: 0.86rem;
+  }
+
+  .dish-selector {
+    margin-bottom: 14px;
+  }
+
+  .dish-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .dish-card {
-    min-height: 128px;
+    min-height: 74px;
+    padding: 10px;
+  }
+
+  .dish-card-title {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+  }
+
+  .dish-card-description {
+    display: none;
+  }
+
+  .workspace {
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   .roll-panel,
   .result-card {
+    padding: 10px;
+  }
+
+  .panel-note {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .category-lock {
+    min-height: 106px;
+    padding: 10px;
+  }
+
+  .category-lock-top {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .category-lock h3 {
+    font-size: 0.7rem;
+  }
+
+  .category-lock p {
+    display: none;
+  }
+
+  .lock-toggle {
+    min-width: 0;
+    width: 100%;
+    min-height: 32px;
+    font-size: 0.82rem;
+  }
+
+  .category-roll {
+    min-height: 34px;
+    font-size: 1.08rem;
+    line-height: 1.05;
+  }
+
+  .roll-button {
+    min-height: 52px;
+    margin-top: 10px;
+    font-size: 1rem;
+  }
+
+  .empty-state {
+    min-height: 150px;
     padding: 14px;
+  }
+
+  .empty-dice {
+    font-size: 1.8rem;
+  }
+
+  .recipe-card {
+    padding: 12px;
+  }
+
+  .recipe-card h3 {
+    margin-bottom: 12px;
+    font-size: clamp(1.55rem, 10vw, 2.4rem);
+  }
+
+  .roll-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .roll-list div {
+    padding: 8px;
+  }
+
+  .roll-list dt {
+    font-size: 0.66rem;
+  }
+
+  .roll-list dd {
+    font-size: 0.92rem;
+  }
+
+  .recipe-notes {
+    gap: 8px;
+  }
+
+  .recipe-notes div {
+    padding-top: 8px;
+  }
+
+  .recipe-notes p {
+    font-size: 0.94rem;
+    line-height: 1.42;
+  }
+
+  .result-actions {
+    margin-top: 12px;
+  }
+
+  .secondary-button {
+    min-height: 42px;
+  }
+
+  .ingredient-editor summary {
+    padding: 13px 12px;
+    font-size: 0.9rem;
+  }
+
+  .editor-body {
+    padding: 0 12px 12px;
+  }
+
+  .editor-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .editor-field textarea {
+    min-height: 112px;
+  }
+}
+
+@media (max-width: 380px) {
+  .category-grid,
+  .roll-list {
+    grid-template-columns: 1fr;
   }
 }

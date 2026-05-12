@@ -16,7 +16,7 @@ function ResultCard({ result, copyStatus, onRollAgain, onCopy }: ResultCardProps
           <h2 id="result-title">Recipe idea</h2>
         </div>
         <div className="empty-state">
-          <p className="empty-dice" aria-hidden="true">🎲</p>
+          <p className="empty-dice" aria-hidden="true">D6</p>
           <p>Choose a dish mode and roll to get a dinner idea.</p>
         </div>
       </section>

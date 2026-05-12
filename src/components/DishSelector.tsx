@@ -1,11 +1,12 @@
-import { dishTypes, type DishId } from "../data/dishTypes";
+import type { DishId, DishType } from "../data/dishTypes";
 
 type DishSelectorProps = {
+  dishTypes: DishType[];
   selectedDishId: DishId;
   onSelect: (dishId: DishId) => void;
 };
 
-function DishSelector({ selectedDishId, onSelect }: DishSelectorProps) {
+function DishSelector({ dishTypes, selectedDishId, onSelect }: DishSelectorProps) {
   return (
     <section className="dish-selector" aria-labelledby="dish-selector-title">
       <div className="section-label">
