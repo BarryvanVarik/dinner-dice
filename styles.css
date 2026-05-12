@@ -1,0 +1,375 @@
+:root {
+  color-scheme: light;
+  --bg: #f5f2ec;
+  --ink: #1f2520;
+  --muted: #667065;
+  --panel: #fffaf1;
+  --line: #ded5c7;
+  --accent: #da5635;
+  --accent-dark: #a93827;
+  --leaf: #2f7d57;
+  --gold: #d79a27;
+  --shadow: 0 18px 60px rgba(43, 34, 24, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(47, 125, 87, 0.12), transparent 34%),
+    linear-gradient(315deg, rgba(218, 86, 53, 0.14), transparent 38%),
+    var(--bg);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+.app-shell {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 132px;
+  gap: 24px;
+  align-items: center;
+  min-height: 220px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 760px;
+  margin-bottom: 14px;
+  font-size: clamp(2.4rem, 9vw, 5.9rem);
+  line-height: 0.92;
+}
+
+.intro-copy {
+  max-width: 590px;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.dice-mark {
+  position: relative;
+  width: 132px;
+  aspect-ratio: 1;
+  border: 4px solid var(--ink);
+  border-radius: 8px;
+  background: #fffdf8;
+  box-shadow: var(--shadow);
+  transform: rotate(7deg);
+}
+
+.dice-mark span {
+  position: absolute;
+  width: 18px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.dice-mark span:nth-child(1) {
+  left: 24px;
+  top: 24px;
+}
+
+.dice-mark span:nth-child(2) {
+  right: 24px;
+  top: 24px;
+}
+
+.dice-mark span:nth-child(3) {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--accent);
+}
+
+.dice-mark span:nth-child(4) {
+  left: 24px;
+  bottom: 24px;
+}
+
+.dice-mark span:nth-child(5) {
+  right: 24px;
+  bottom: 24px;
+}
+
+.controls,
+.diet-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.primary-action,
+.secondary-action,
+.ghost-action,
+.text-action,
+.lock-button,
+.remove-button {
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.primary-action {
+  padding: 0 24px;
+  color: #fffdf8;
+  background: var(--accent);
+  box-shadow: 0 10px 28px rgba(218, 86, 53, 0.32);
+}
+
+.secondary-action,
+.ghost-action {
+  padding: 0 18px;
+  color: var(--ink);
+  background: rgba(255, 250, 241, 0.86);
+  border: 1px solid var(--line);
+}
+
+.ghost-action {
+  color: var(--muted);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 250, 241, 0.76);
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--leaf);
+}
+
+.dice-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.die-card {
+  min-height: 196px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 241, 0.9);
+  box-shadow: 0 12px 34px rgba(43, 34, 24, 0.08);
+}
+
+.die-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.die-label {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.lock-button {
+  min-width: 58px;
+  min-height: 36px;
+  padding: 0 10px;
+  color: var(--muted);
+  background: #f0eadf;
+}
+
+.lock-button[aria-pressed="true"] {
+  color: #fffdf8;
+  background: var(--leaf);
+}
+
+.ingredient {
+  min-height: 72px;
+  margin-bottom: 16px;
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
+  line-height: 1.05;
+  font-weight: 900;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.saved {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.text-action {
+  min-height: 36px;
+  padding: 0 12px;
+  color: var(--accent-dark);
+  background: transparent;
+}
+
+.saved-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.saved-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 241, 0.76);
+}
+
+.saved-combo {
+  line-height: 1.45;
+}
+
+.remove-button {
+  min-width: 42px;
+  color: var(--muted);
+  background: #f0eadf;
+}
+
+.empty-state {
+  color: var(--muted);
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(47, 125, 87, 0.32);
+  outline-offset: 3px;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 860px) {
+  .dice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell {
+    width: min(100% - 24px, 1080px);
+    padding-top: 18px;
+  }
+
+  .intro {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 14px 0 20px;
+  }
+
+  .dice-mark {
+    width: 86px;
+    order: -1;
+  }
+
+  .dice-mark span {
+    width: 12px;
+  }
+
+  .dice-mark span:nth-child(1) {
+    left: 16px;
+    top: 16px;
+  }
+
+  .dice-mark span:nth-child(2) {
+    right: 16px;
+    top: 16px;
+  }
+
+  .dice-mark span:nth-child(4) {
+    left: 16px;
+    bottom: 16px;
+  }
+
+  .dice-mark span:nth-child(5) {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .controls > button {
+    flex: 1 1 150px;
+  }
+
+  .dice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .die-card {
+    min-height: 168px;
+  }
+}
