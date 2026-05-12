@@ -1,17 +1,32 @@
 # Dinner Dice
 
-A static dinner randomizer you can host with GitHub Pages.
+A responsive React and TypeScript dinner randomizer for GitHub Pages.
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+The production build is written to `docs/` so GitHub Pages can serve it directly.
 
 ## Deploy on GitHub Pages
 
-1. Create a new GitHub repository.
-2. Push this folder to that repository.
-3. In GitHub, open **Settings > Pages**.
-4. Set **Source** to **Deploy from a branch**.
-5. Choose the `main` branch and `/root`, then save.
-
-GitHub will publish the site at:
+This repository is configured to publish from:
 
 ```text
-https://YOUR-GITHUB-USERNAME.github.io/YOUR-REPOSITORY-NAME/
+main branch /docs folder
+```
+
+The live site is:
+
+```text
+https://barryvanvarik.github.io/dinner-dice/
 ```
