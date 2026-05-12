@@ -105,7 +105,9 @@ function singularFood(value: string) {
     "Bean sprouts": "bean sprout",
     "Cod pieces": "cod",
     "Beef strips": "beef",
-    "Pork strips": "pork"
+    "Pork strips": "pork",
+    Celeriac: "celeriac",
+    Celery: "celery"
   };
 
   return replacements[value] ?? lowercase(value);
@@ -225,6 +227,13 @@ function createDishName(dishType: DishType, rolls: RolledCategory[]) {
       return `${base} ${protein} with ${vegetables} stew`;
     }
 
+    case "soup": {
+      const base = getRoll(rolls, "soup-base");
+      const protein = singularFood(getRoll(rolls, "protein"));
+      const vegetables = singularFoodList(getRollItems(rolls, "vegetables"));
+      return `${base} ${protein} soup with ${vegetables}`;
+    }
+
     case "salad": {
       const protein = saladProteinName(getRoll(rolls, "protein"));
       const vegetables = singularFoodList(getRollItems(rolls, "vegetables"));
@@ -245,6 +254,9 @@ function createInstruction(dishType: DishType, rolls: RolledCategory[]) {
     case "stew":
       return `Brown or soften the ${lowercase(getRoll(rolls, "main-protein"))}, add ${lowerList(getRollItems(rolls, "vegetables"))}, ${lowercase(getRoll(rolls, "base"))}, and ${lowercase(getRoll(rolls, "flavor-direction"))}, then simmer until cozy with ${lowercase(getRoll(rolls, "thickener-body"))} for body. Finish with ${lowercase(getRoll(rolls, "finish"))}.`;
 
+    case "soup":
+      return `Soften ${lowerList(getRollItems(rolls, "vegetables"))}, add ${lowercase(getRoll(rolls, "protein"))}, ${lowercase(getRoll(rolls, "soup-base"))}, and ${lowercase(getRoll(rolls, "flavor-direction"))}, then simmer until everything is tender. Add ${lowercase(getRoll(rolls, "body"))} for body and finish with ${lowercase(getRoll(rolls, "finish"))}.`;
+
     case "salad":
       return `Start with ${lowercase(getRoll(rolls, "base"))}, add ${lowercase(getRoll(rolls, "carb-body"))}, ${lowercase(getRoll(rolls, "protein"))}, ${lowerList(getRollItems(rolls, "vegetables"))}, and ${lowercase(getRoll(rolls, "crunch"))}, then dress with ${lowercase(getRoll(rolls, "dressing"))} and finish with ${lowercase(getRoll(rolls, "extra"))}.`;
   }
@@ -258,6 +270,8 @@ function createKidFriendlyTweak(dishType: DishType, rolls: RolledCategory[]) {
       return `Serve the sauce on the side and keep any spicy toppings separate.`;
     case "stew":
       return `Mash a few vegetables into the stew to thicken it and soften stronger flavors.`;
+    case "soup":
+      return `Blend part of the soup smooth and keep stronger toppings on the side.`;
     case "salad":
       return `Serve it as a build-your-own bowl with the dressing on the side.`;
   }
@@ -271,6 +285,8 @@ function createUpgradeIdea(dishType: DishType, rolls: RolledCategory[]) {
       return `Add a jammy egg or quick-pickled cucumber for contrast.`;
     case "stew":
       return `Make it a day ahead so the ${getRoll(rolls, "flavor-direction").toLowerCase()} flavor gets deeper.`;
+    case "soup":
+      return `Add toasted rye crumbs or a swirl of sour cream right before serving.`;
     case "salad":
       return `Char or roast one ingredient before tossing for a warmer dinner salad.`;
   }

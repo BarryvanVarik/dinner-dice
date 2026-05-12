@@ -1,4 +1,4 @@
-export type DishId = "pasta" | "rice-wok" | "stew" | "salad";
+export type DishId = "pasta" | "rice-wok" | "stew" | "soup" | "salad";
 
 export type Category = {
   id: string;
@@ -334,6 +334,114 @@ export const dishTypes: DishType[] = [
           "Chives",
           "Pickled cucumber",
           "Crispy bacon"
+        ]
+      }
+    ]
+  },
+  {
+    id: "soup",
+    label: "Soup",
+    shortLabel: "Soup",
+    description: "Warm bowls built from everyday fridge and pantry staples.",
+    categories: [
+      {
+        id: "soup-base",
+        label: "Soup base",
+        options: [
+          "Chicken broth",
+          "Vegetable broth",
+          "Tomato",
+          "Creamy potato",
+          "Coconut milk",
+          "Split pea base",
+          "Beef broth",
+          "Mushroom broth",
+          "Carrot ginger",
+          "Leek cream"
+        ]
+      },
+      {
+        id: "protein",
+        label: "Protein",
+        options: [
+          "Chicken",
+          "Smoked sausage",
+          "Meatballs",
+          "Bacon",
+          "Lentils",
+          "White beans",
+          "Chickpeas",
+          "Shrimp",
+          "Cod pieces",
+          "Boiled egg"
+        ]
+      },
+      {
+        id: "vegetables",
+        label: "Vegetables",
+        pickCount: 2,
+        options: [
+          "Leek",
+          "Carrot",
+          "Potatoes",
+          "Celeriac",
+          "Celery",
+          "Mushrooms",
+          "Cauliflower",
+          "Broccoli",
+          "Peas",
+          "Spinach",
+          "Kale",
+          "White cabbage",
+          "Parsnip"
+        ]
+      },
+      {
+        id: "body",
+        label: "Body",
+        options: [
+          "Potatoes",
+          "Small pasta",
+          "Pearl barley",
+          "Rice",
+          "Lentils",
+          "White beans",
+          "Rye bread on the side",
+          "Croutons",
+          "Noodles",
+          "Cream"
+        ]
+      },
+      {
+        id: "flavor-direction",
+        label: "Flavor direction",
+        options: [
+          "Bay and thyme",
+          "Dill mustard",
+          "Smoked paprika",
+          "Garlic parsley",
+          "Mild curry",
+          "Caraway",
+          "Ginger garlic",
+          "Tomato herbs",
+          "Pepper and nutmeg",
+          "Lemon dill"
+        ]
+      },
+      {
+        id: "finish",
+        label: "Finish",
+        options: [
+          "Parsley",
+          "Fresh dill",
+          "Chives",
+          "Sour cream",
+          "Yoghurt",
+          "Lemon juice",
+          "Crispy bacon",
+          "Grated cheese",
+          "Chili oil",
+          "Toasted rye crumbs"
         ]
       }
     ]
