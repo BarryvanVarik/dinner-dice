@@ -39,6 +39,7 @@ function RollPanel({
             categoryId={category.id}
             label={category.label}
             options={category.options}
+            pickCount={category.pickCount}
             rolledCategory={getRolledCategory(category.id)}
             isLocked={lockedCategories.has(category.id)}
             onToggleLock={onToggleLock}

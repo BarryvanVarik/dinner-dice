@@ -4,6 +4,7 @@ type CategoryLockProps = {
   categoryId: string;
   label: string;
   options: string[];
+  pickCount?: number;
   rolledCategory?: RolledCategory;
   isLocked: boolean;
   onToggleLock: (categoryId: string) => void;
@@ -13,16 +14,19 @@ function CategoryLock({
   categoryId,
   label,
   options,
+  pickCount = 1,
   rolledCategory,
   isLocked,
   onToggleLock
 }: CategoryLockProps) {
+  const rollCountText = pickCount > 1 ? `Rolls ${pickCount} of ${options.length}` : `${options.length} options`;
+
   return (
     <article className="category-lock">
       <div className="category-lock-top">
         <div>
           <h3>{label}</h3>
-          <p>{options.length} options</p>
+          <p>{rollCountText}</p>
         </div>
 
         <button

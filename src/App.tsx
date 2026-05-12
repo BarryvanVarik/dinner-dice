@@ -6,7 +6,7 @@ import RollPanel from "./components/RollPanel";
 import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./data/dishTypes";
 import { createCopyText, rollDish, type RollResult } from "./utils/roll";
 
-const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypes";
+const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
 
 function App() {
   const [dishTypes, setDishTypes] = useState<DishType[]>(loadDishTypes);
