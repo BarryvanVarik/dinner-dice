@@ -101,7 +101,7 @@ dd {
 }
 
 .dice-badge.is-rolling {
-  animation: dice-tumble 760ms cubic-bezier(0.2, 0.78, 0.32, 1.12);
+  animation: dice-tumble 1050ms cubic-bezier(0.2, 0.78, 0.32, 1.12);
 }
 
 .dice-badge span {
@@ -349,7 +349,7 @@ dd {
 }
 
 .result-card.is-rolling {
-  animation: result-pulse 760ms ease-in-out infinite;
+  animation: result-pulse 1050ms ease-in-out infinite;
 }
 
 .empty-state {

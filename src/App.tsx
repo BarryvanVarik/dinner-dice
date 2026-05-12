@@ -7,7 +7,7 @@ import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./dat
 import { createCopyText, rollDish, type RollResult } from "./utils/roll";
 
 const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
-const ROLL_ANIMATION_MS = 760;
+const ROLL_ANIMATION_MS = 1050;
 
 function App() {
   const [dishTypes, setDishTypes] = useState<DishType[]>(loadDishTypes);
