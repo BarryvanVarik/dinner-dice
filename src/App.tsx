@@ -177,13 +177,13 @@ function App() {
     <main className="app-shell">
       <header className="hero">
         <div>
-          <p className="eyebrow">Dinner Dice • Kitchen Edition</p>
-          <h1>What&apos;s for Dinner?</h1>
-          <p className="subtitle">Roll up a crave-worthy meal from tonight&apos;s pantry</p>
+          <p className="eyebrow">Dinner Dice</p>
+          <h1>Dinner Dice</h1>
+          <p className="subtitle">Roll your way into dinner.</p>
           <div className="hero-chips" aria-hidden="true">
-            <span>🍅 Fresh</span>
-            <span>🧄 Savory</span>
-            <span>🌿 Cozy</span>
+            <span>Fresh</span>
+            <span>Simple</span>
+            <span>Cozy</span>
           </div>
         </div>
         <div className={`dice-badge${isRolling ? " is-rolling" : ""}`} aria-hidden="true">

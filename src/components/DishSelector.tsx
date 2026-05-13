@@ -20,12 +20,13 @@ function DishSelector({ dishTypes, selectedDishId, onSelect }: DishSelectorProps
 
           return (
             <button
-              className="dish-card"
+              className={`dish-card dish-card-${dishType.id}`}
               type="button"
               key={dishType.id}
               aria-pressed={isSelected}
               onClick={() => onSelect(dishType.id)}
             >
+              <span className="dish-visual" aria-hidden="true" />
               <span className="dish-card-title">{dishType.label}</span>
               <span className="dish-card-description">{dishType.description}</span>
             </button>

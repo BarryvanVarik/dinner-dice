@@ -29,7 +29,13 @@ function ResultCard({
           <h2 id="result-title">Recipe idea</h2>
         </div>
         <div className="empty-state">
-          <p className="empty-dice" aria-hidden="true">{isRolling ? "??" : "D6"}</p>
+          <div className={`empty-dice${isRolling ? " is-rolling" : ""}`} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
           <p>{isRolling ? "Rolling a dinner idea..." : "Choose a dish mode and roll to get a dinner idea."}</p>
         </div>
       </section>
