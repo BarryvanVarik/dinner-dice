@@ -2,13 +2,25 @@ import type { RollResult } from "../utils/roll";
 
 type ResultCardProps = {
   result: RollResult | null;
-  copyStatus: "idle" | "copied" | "failed";
+  actionStatus: string;
   isRolling: boolean;
+  isFavorite: boolean;
   onRollAgain: () => void;
   onCopy: () => void;
+  onCopyShoppingList: () => void;
+  onSaveFavorite: () => void;
 };
 
-function ResultCard({ result, copyStatus, isRolling, onRollAgain, onCopy }: ResultCardProps) {
+function ResultCard({
+  result,
+  actionStatus,
+  isRolling,
+  isFavorite,
+  onRollAgain,
+  onCopy,
+  onCopyShoppingList,
+  onSaveFavorite
+}: ResultCardProps) {
   if (!result) {
     return (
       <section className={`result-card empty-result${isRolling ? " is-rolling" : ""}`} aria-labelledby="result-title">
@@ -63,14 +75,19 @@ function ResultCard({ result, copyStatus, isRolling, onRollAgain, onCopy }: Resu
           <button className="secondary-button" type="button" disabled={isRolling} onClick={onRollAgain}>
             {isRolling ? "Rolling..." : "Roll again"}
           </button>
+          <button className="secondary-button" type="button" disabled={isRolling} onClick={onSaveFavorite}>
+            {isFavorite ? "Saved" : "Save"}
+          </button>
           <button className="secondary-button copy-button" type="button" disabled={isRolling} onClick={onCopy}>
             Copy result
+          </button>
+          <button className="secondary-button copy-button" type="button" disabled={isRolling} onClick={onCopyShoppingList}>
+            Shopping list
           </button>
         </div>
 
         <p className="copy-status" role="status">
-          {copyStatus === "copied" && "Copied to clipboard."}
-          {copyStatus === "failed" && "Copy failed. Your browser may be blocking clipboard access."}
+          {actionStatus}
         </p>
       </article>
     </section>

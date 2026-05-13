@@ -18,6 +18,11 @@ export type RollResult = {
 };
 
 type RollMap = Record<string, RolledCategory>;
+type CompatibilityRule = {
+  categoryId: string;
+  blockedItems: string[];
+  when: (rolls: RolledCategory[]) => boolean;
+};
 
 function pickRandomItems(options: string[], count: number) {
   const availableOptions = [...options];
@@ -153,13 +158,23 @@ function rollCategory(category: Category): RolledCategory {
   };
 }
 
+function rerollCategory(category: Category, blockedItems: string[]) {
+  const availableOptions = category.options.filter((option) => !blockedItems.includes(option));
+  const options = availableOptions.length > 0 ? availableOptions : category.options;
+
+  return rollCategory({
+    ...category,
+    options
+  });
+}
+
 export function rollDish(
   dishType: DishType,
   previousResult: RollResult | null,
   lockedCategories: Set<string>
 ): RollResult {
   const previousRolls = toRollMap(previousResult);
-  const rolls = dishType.categories.map((category) => {
+  let rolls = dishType.categories.map((category) => {
     const lockedRoll = previousRolls[category.id];
 
     if (lockedCategories.has(category.id) && lockedRoll) {
@@ -168,6 +183,8 @@ export function rollDish(
 
     return rollCategory(category);
   });
+
+  rolls = improveCompatibility(dishType, rolls, lockedCategories);
 
   return {
     dishTypeId: dishType.id,
@@ -200,6 +217,91 @@ export function createCopyText(result: RollResult) {
     "Upgrade idea:",
     result.upgradeIdea
   ].join("\n");
+}
+
+export function createShoppingListText(result: RollResult) {
+  const ingredients = result.rolls.flatMap((roll) => roll.items?.length ? roll.items : [roll.item]);
+  const uniqueIngredients = Array.from(new Set(ingredients));
+
+  return [
+    `Dinner Dice shopping list: ${result.dishName}`,
+    "",
+    ...uniqueIngredients.map((ingredient) => `- ${ingredient}`)
+  ].join("\n");
+}
+
+function improveCompatibility(
+  dishType: DishType,
+  rolls: RolledCategory[],
+  lockedCategories: Set<string>
+) {
+  const rules = getCompatibilityRules(dishType);
+
+  return rules.reduce((currentRolls, rule) => {
+    if (!rule.when(currentRolls) || lockedCategories.has(rule.categoryId)) {
+      return currentRolls;
+    }
+
+    const category = dishType.categories.find((dishCategory) => dishCategory.id === rule.categoryId);
+
+    if (!category) {
+      return currentRolls;
+    }
+
+    return currentRolls.map((roll) =>
+      roll.categoryId === rule.categoryId ? rerollCategory(category, rule.blockedItems) : roll
+    );
+  }, rolls);
+}
+
+function getCompatibilityRules(dishType: DishType): CompatibilityRule[] {
+  switch (dishType.id) {
+    case "pasta":
+      return [
+        {
+          categoryId: "sauce-base",
+          blockedItems: ["Cream cheese", "Mushroom cream", "Mustard cream", "Tomato mascarpone"],
+          when: (rolls) => ["Tuna", "Smoked salmon"].includes(getRoll(rolls, "protein"))
+        }
+      ];
+    case "rice-wok":
+      return [
+        {
+          categoryId: "sauce",
+          blockedItems: ["Oyster-style", "Gochujang"],
+          when: (rolls) => ["Apple", "Pineapple"].includes(getRoll(rolls, "extra"))
+        }
+      ];
+    case "stew":
+      return [
+        {
+          categoryId: "base",
+          blockedItems: ["Beef broth", "Dark beer", "Brown gravy"],
+          when: (rolls) => ["Cod pieces"].includes(getRoll(rolls, "main-protein"))
+        }
+      ];
+    case "soup":
+      return [
+        {
+          categoryId: "soup-base",
+          blockedItems: ["Beef broth", "Split pea base"],
+          when: (rolls) => ["Shrimp", "Cod pieces"].includes(getRoll(rolls, "protein"))
+        },
+        {
+          categoryId: "soup-base",
+          blockedItems: ["Coconut milk", "Carrot ginger"],
+          when: (rolls) => ["Smoked sausage", "Bacon"].includes(getRoll(rolls, "protein"))
+        }
+      ];
+    case "salad":
+      return [
+        {
+          categoryId: "dressing",
+          blockedItems: ["Soy sesame", "Creamy curry"],
+          when: (rolls) => ["Mackerel", "Smoked salmon"].includes(getRoll(rolls, "protein"))
+        }
+      ];
+  }
 }
 
 function createDishName(dishType: DishType, rolls: RolledCategory[]) {

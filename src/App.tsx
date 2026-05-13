@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import DishSelector from "./components/DishSelector";
+import FavoriteResults from "./components/FavoriteResults";
 import IngredientEditor from "./components/IngredientEditor";
 import ResultCard from "./components/ResultCard";
 import RollPanel from "./components/RollPanel";
 import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./data/dishTypes";
-import { createCopyText, rollDish, type RollResult } from "./utils/roll";
+import { createCopyText, createShoppingListText, rollDish, type RollResult } from "./utils/roll";
 
 const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
+const FAVORITES_STORAGE_KEY = "dinnerDiceFavoritesV1";
 const ROLL_ANIMATION_MS = 1050;
 
 function App() {
   const [dishTypes, setDishTypes] = useState<DishType[]>(loadDishTypes);
+  const [favorites, setFavorites] = useState<RollResult[]>(loadFavoriteResults);
   const [selectedDishId, setSelectedDishId] = useState<DishId>("pasta");
   const [result, setResult] = useState<RollResult | null>(null);
   const [lockedCategories, setLockedCategories] = useState<Set<string>>(new Set());
-  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
+  const [actionStatus, setActionStatus] = useState("");
   const [isRolling, setIsRolling] = useState(false);
   const rollTimerRef = useRef<number | null>(null);
 
@@ -36,7 +39,7 @@ function App() {
     setSelectedDishId(dishId);
     setResult(null);
     setLockedCategories(new Set());
-    setCopyStatus("idle");
+    setActionStatus("");
     setIsRolling(false);
   }
 
@@ -46,7 +49,7 @@ function App() {
     }
 
     clearPendingRoll();
-    setCopyStatus("idle");
+    setActionStatus("");
     setIsRolling(true);
 
     rollTimerRef.current = window.setTimeout(() => {
@@ -76,11 +79,54 @@ function App() {
     }
 
     try {
-      await navigator.clipboard.writeText(createCopyText(result));
-      setCopyStatus("copied");
+      await copyText(createCopyText(result));
+      setActionStatus("Copied result.");
     } catch {
-      setCopyStatus("failed");
+      setActionStatus("Copy failed.");
     }
+  }
+
+  async function handleCopyShoppingList() {
+    if (!result) {
+      return;
+    }
+
+    try {
+      await copyText(createShoppingListText(result));
+      setActionStatus("Copied shopping list.");
+    } catch {
+      setActionStatus("Copy failed.");
+    }
+  }
+
+  function handleSaveFavorite() {
+    if (!result) {
+      return;
+    }
+
+    const nextFavorites = [
+      result,
+      ...favorites.filter((favorite) => getResultKey(favorite) !== getResultKey(result))
+    ].slice(0, 8);
+
+    setFavorites(nextFavorites);
+    saveFavoriteResults(nextFavorites);
+    setActionStatus("Saved favorite.");
+  }
+
+  function handleLoadFavorite(favorite: RollResult) {
+    clearPendingRoll();
+    setSelectedDishId(favorite.dishTypeId);
+    setResult(favorite);
+    setLockedCategories(new Set());
+    setActionStatus("");
+    setIsRolling(false);
+  }
+
+  function handleRemoveFavorite(resultKey: string) {
+    const nextFavorites = favorites.filter((favorite) => getResultKey(favorite) !== resultKey);
+    setFavorites(nextFavorites);
+    saveFavoriteResults(nextFavorites);
   }
 
   function handleSaveIngredients(updates: Record<string, string[]>) {
@@ -103,7 +149,7 @@ function App() {
     saveDishTypes(nextDishTypes);
     setResult(null);
     setLockedCategories(new Set());
-    setCopyStatus("idle");
+    setActionStatus("");
     setIsRolling(false);
   }
 
@@ -123,7 +169,7 @@ function App() {
     saveDishTypes(nextDishTypes);
     setResult(null);
     setLockedCategories(new Set());
-    setCopyStatus("idle");
+    setActionStatus("");
     setIsRolling(false);
   }
 
@@ -163,12 +209,21 @@ function App() {
 
         <ResultCard
           result={result}
-          copyStatus={copyStatus}
+          actionStatus={actionStatus}
           isRolling={isRolling}
+          isFavorite={result ? favorites.some((favorite) => getResultKey(favorite) === getResultKey(result)) : false}
           onRollAgain={handleRoll}
           onCopy={handleCopy}
+          onCopyShoppingList={handleCopyShoppingList}
+          onSaveFavorite={handleSaveFavorite}
         />
       </div>
+
+      <FavoriteResults
+        favorites={favorites}
+        onLoad={handleLoadFavorite}
+        onRemove={handleRemoveFavorite}
+      />
 
       <IngredientEditor
         dishType={selectedDish}
@@ -203,6 +258,52 @@ function loadDishTypes() {
 
 function saveDishTypes(dishTypes: DishType[]) {
   localStorage.setItem(INGREDIENT_STORAGE_KEY, JSON.stringify(dishTypes));
+}
+
+function loadFavoriteResults() {
+  try {
+    const storedValue = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    return storedValue ? JSON.parse(storedValue) as RollResult[] : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavoriteResults(favorites: RollResult[]) {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+}
+
+async function copyText(value: string) {
+  if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(value);
+      return;
+    } catch {
+      // Fall back for browsers that expose Clipboard API but block it in the current context.
+    }
+  }
+
+  const textArea = document.createElement("textarea");
+  textArea.value = value;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.left = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.select();
+
+  try {
+    const copied = document.execCommand("copy");
+
+    if (!copied) {
+      throw new Error("Copy command failed");
+    }
+  } finally {
+    document.body.removeChild(textArea);
+  }
+}
+
+function getResultKey(result: RollResult) {
+  return `${result.dishTypeId}:${result.rolls.map((roll) => `${roll.categoryId}=${roll.item}`).join("|")}`;
 }
 
 function mergeWithDefaults(storedDishTypes: DishType[]) {
