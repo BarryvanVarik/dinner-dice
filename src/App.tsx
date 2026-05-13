@@ -5,6 +5,7 @@ import IngredientEditor from "./components/IngredientEditor";
 import ResultCard from "./components/ResultCard";
 import RollPanel from "./components/RollPanel";
 import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./data/dishTypes";
+import { initializeAnalytics, trackEvent } from "./utils/analytics";
 import { createCopyText, createShoppingListText, rollDish, type RollResult } from "./utils/roll";
 
 const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
@@ -27,6 +28,10 @@ function App() {
   );
 
   useEffect(() => {
+    initializeAnalytics();
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (rollTimerRef.current) {
         window.clearTimeout(rollTimerRef.current);
@@ -41,6 +46,7 @@ function App() {
     setLockedCategories(new Set());
     setActionStatus("");
     setIsRolling(false);
+    trackEvent("Dish Selected", { dishType: dishId });
   }
 
   function handleRoll() {
@@ -56,6 +62,10 @@ function App() {
       setResult((currentResult) => rollDish(selectedDish, currentResult, lockedCategories));
       setIsRolling(false);
       rollTimerRef.current = null;
+      trackEvent("Roll Dish", {
+        dishType: selectedDish.label,
+        lockedCategories: lockedCategories.size
+      });
     }, ROLL_ANIMATION_MS);
   }
 
@@ -81,6 +91,7 @@ function App() {
     try {
       await copyText(createCopyText(result));
       setActionStatus("Copied result.");
+      trackEvent("Copy Result", { dishType: result.dishTypeLabel });
     } catch {
       setActionStatus("Copy failed.");
     }
@@ -94,6 +105,7 @@ function App() {
     try {
       await copyText(createShoppingListText(result));
       setActionStatus("Copied shopping list.");
+      trackEvent("Shopping List", { dishType: result.dishTypeLabel });
     } catch {
       setActionStatus("Copy failed.");
     }
@@ -112,6 +124,7 @@ function App() {
     setFavorites(nextFavorites);
     saveFavoriteResults(nextFavorites);
     setActionStatus("Saved favorite.");
+    trackEvent("Save Favorite", { dishType: result.dishTypeLabel });
   }
 
   function handleLoadFavorite(favorite: RollResult) {
