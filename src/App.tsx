@@ -289,6 +289,7 @@ async function copyText(value: string) {
   textArea.style.position = "fixed";
   textArea.style.left = "-9999px";
   document.body.appendChild(textArea);
+  textArea.focus();
   textArea.select();
 
   try {
