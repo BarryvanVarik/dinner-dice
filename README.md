@@ -34,16 +34,16 @@ Analytics are optional and privacy-friendly. The app supports Plausible pageview
 To enable it, create a Plausible site for your domain, then build with:
 
 ```bash
-VITE_PLAUSIBLE_DOMAIN=www.dinnerdice.com npm run build
+VITE_PLAUSIBLE_DOMAIN=www.dishtoss.com npm run build
 ```
 
 On Windows PowerShell:
 
 ```powershell
-$env:VITE_PLAUSIBLE_DOMAIN="www.dinnerdice.com"; npm run build
+$env:VITE_PLAUSIBLE_DOMAIN="www.dishtoss.com"; npm run build
 ```
 
-For the current GitHub Pages URL, use `barryvanvarik.github.io` as the domain in Plausible. If you later move to `www.dinnerdice.com`, update the value and rebuild.
+For the custom domain, use `www.dishtoss.com` as the domain in Plausible.
 
 ## Deploy on GitHub Pages
 
@@ -56,5 +56,5 @@ main branch /docs folder
 The live site is:
 
 ```text
-https://barryvanvarik.github.io/dinner-dice/
+https://www.dishtoss.com/
 ```
