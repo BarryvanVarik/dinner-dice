@@ -11,6 +11,10 @@ type DishSelectorProps = {
 function DishSelector({ dishTypes, selectedDishId, language, onSelect }: DishSelectorProps) {
   const text = getUiText(language);
 
+  function getImagePath(dishId: DishId) {
+    return `${import.meta.env.BASE_URL}images/${dishId}.png`;
+  }
+
   return (
     <section className="dish-selector" aria-labelledby="dish-selector-title">
       <div className="section-label">
@@ -31,7 +35,9 @@ function DishSelector({ dishTypes, selectedDishId, language, onSelect }: DishSel
               aria-pressed={isSelected}
               onClick={() => onSelect(dishType.id)}
             >
-              <span className="dish-visual" aria-hidden="true" />
+              <span className="dish-visual" aria-hidden="true">
+                <img src={getImagePath(dishType.id)} alt="" loading="lazy" />
+              </span>
               <span className="dish-card-title">{translatedDish.label}</span>
               <span className="dish-card-description">{translatedDish.description}</span>
             </button>
