@@ -116,6 +116,10 @@ function App() {
   }
 
   function handleAndreasRoll() {
+    if (isRolling) {
+      return;
+    }
+
     clearPendingRoll();
     const pastaDish = dishTypes.find((dishType) => dishType.id === "pasta");
 
@@ -124,11 +128,16 @@ function App() {
     }
 
     setSelectedDishId("pasta");
-    setResult(createAndreasResult(pastaDish, language));
-    setLockedCategories(new Set());
     setActionStatus("");
-    setIsRolling(false);
-    trackEvent("Andreas Button");
+    setIsRolling(true);
+
+    rollTimerRef.current = window.setTimeout(() => {
+      setResult(createAndreasResult(pastaDish, language));
+      setLockedCategories(new Set());
+      setIsRolling(false);
+      rollTimerRef.current = null;
+      trackEvent("Andreas Button");
+    }, ROLL_ANIMATION_MS);
   }
 
   async function handleCopy() {
