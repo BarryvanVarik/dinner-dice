@@ -1,3 +1,5 @@
+import { getUiText, type LanguageCode, translateCategory } from "../data/i18n";
+import { displayRollItem } from "../utils/roll";
 import type { RollResult } from "../utils/roll";
 
 type ResultCardProps = {
@@ -5,6 +7,7 @@ type ResultCardProps = {
   actionStatus: string;
   isRolling: boolean;
   isFavorite: boolean;
+  language: LanguageCode;
   onRollAgain: () => void;
   onCopy: () => void;
   onCopyShoppingList: () => void;
@@ -16,17 +19,20 @@ function ResultCard({
   actionStatus,
   isRolling,
   isFavorite,
+  language,
   onRollAgain,
   onCopy,
   onCopyShoppingList,
   onSaveFavorite
 }: ResultCardProps) {
+  const text = getUiText(language);
+
   if (!result) {
     return (
       <section className={`result-card empty-result${isRolling ? " is-rolling" : ""}`} aria-labelledby="result-title">
         <div className="section-label">
           <span aria-hidden="true">3</span>
-          <h2 id="result-title">Recipe idea</h2>
+          <h2 id="result-title">{text.recipeIdea}</h2>
         </div>
         <div className="empty-state">
           <div className={`empty-dice${isRolling ? " is-rolling" : ""}`} aria-hidden="true">
@@ -36,7 +42,7 @@ function ResultCard({
             <span />
             <span />
           </div>
-          <p>{isRolling ? "Rolling a dinner idea..." : "Choose a dish mode and roll to get a dinner idea."}</p>
+          <p>{isRolling ? text.rollingIdea : text.chooseAndRoll}</p>
         </div>
       </section>
     );
@@ -46,7 +52,7 @@ function ResultCard({
     <section className={`result-card${isRolling ? " is-rolling" : ""}`} aria-labelledby="result-title">
       <div className="section-label">
         <span aria-hidden="true">3</span>
-        <h2 id="result-title">Recipe idea</h2>
+        <h2 id="result-title">{text.recipeIdea}</h2>
       </div>
 
       <article className="recipe-card">
@@ -56,39 +62,39 @@ function ResultCard({
         <dl className="roll-list">
           {result.rolls.map((roll) => (
             <div key={roll.categoryId}>
-              <dt>{roll.label}</dt>
-              <dd>{roll.item}</dd>
+              <dt>{translateCategory(roll.categoryId, roll.label, language)}</dt>
+              <dd>{displayRollItem(roll, language)}</dd>
             </div>
           ))}
         </dl>
 
         <div className="recipe-notes">
           <div>
-            <h4>How to make it</h4>
+            <h4>{text.howToMakeIt}</h4>
             <p>{result.instruction}</p>
           </div>
           <div>
-            <h4>Kid-friendly tweak</h4>
+            <h4>{text.kidFriendlyTweak}</h4>
             <p>{result.kidFriendlyTweak}</p>
           </div>
           <div>
-            <h4>Upgrade idea</h4>
+            <h4>{text.upgradeIdea}</h4>
             <p>{result.upgradeIdea}</p>
           </div>
         </div>
 
         <div className="result-actions">
           <button className="secondary-button" type="button" disabled={isRolling} onClick={onRollAgain}>
-            {isRolling ? "Rolling..." : "Roll again"}
+            {isRolling ? text.rolling : text.rollAgain}
           </button>
           <button className="secondary-button" type="button" disabled={isRolling} onClick={onSaveFavorite}>
-            {isFavorite ? "Saved" : "Save"}
+            {isFavorite ? text.saved : text.save}
           </button>
           <button className="secondary-button copy-button" type="button" disabled={isRolling} onClick={onCopy}>
-            Copy result
+            {text.copyResult}
           </button>
           <button className="secondary-button copy-button" type="button" disabled={isRolling} onClick={onCopyShoppingList}>
-            Shopping list
+            {text.shoppingList}
           </button>
         </div>
 

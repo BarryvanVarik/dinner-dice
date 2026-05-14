@@ -1,12 +1,16 @@
+import { getUiText, type LanguageCode, translateDish } from "../data/i18n";
 import type { RollResult } from "../utils/roll";
 
 type FavoriteResultsProps = {
   favorites: RollResult[];
+  language: LanguageCode;
   onLoad: (favorite: RollResult) => void;
   onRemove: (resultKey: string) => void;
 };
 
-function FavoriteResults({ favorites, onLoad, onRemove }: FavoriteResultsProps) {
+function FavoriteResults({ favorites, language, onLoad, onRemove }: FavoriteResultsProps) {
+  const text = getUiText(language);
+
   if (favorites.length === 0) {
     return null;
   }
@@ -14,7 +18,7 @@ function FavoriteResults({ favorites, onLoad, onRemove }: FavoriteResultsProps) 
   return (
     <details className="favorites-panel">
       <summary>
-        <span>Favorites</span>
+        <span>{text.favorites}</span>
         <span>{favorites.length}</span>
       </summary>
 
@@ -26,10 +30,10 @@ function FavoriteResults({ favorites, onLoad, onRemove }: FavoriteResultsProps) 
             <li key={resultKey}>
               <button className="favorite-load" type="button" onClick={() => onLoad(favorite)}>
                 <span>{favorite.dishName}</span>
-                <small>{favorite.dishTypeLabel}</small>
+                <small>{translateDish(favorite.dishTypeId, language).label}</small>
               </button>
               <button className="favorite-remove" type="button" onClick={() => onRemove(resultKey)}>
-                Remove
+                {text.remove}
               </button>
             </li>
           );

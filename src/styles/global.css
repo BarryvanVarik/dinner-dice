@@ -74,6 +74,36 @@ dd {
   text-align: center;
 }
 
+.hero-side {
+  display: grid;
+  gap: 12px;
+  justify-items: end;
+}
+
+.language-switcher {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 250, 245, 0.82);
+}
+
+.language-switcher button {
+  min-width: 38px;
+  min-height: 30px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.language-switcher button[aria-pressed="true"] {
+  color: #fffaf2;
+  background: var(--terracotta);
+}
+
 .eyebrow {
   margin-bottom: 8px;
   color: var(--terracotta);
@@ -823,6 +853,20 @@ textarea:focus-visible {
     width: 58px;
     border-width: 2px;
     border-radius: 12px;
+  }
+
+  .hero-side {
+    gap: 8px;
+  }
+
+  .language-switcher {
+    justify-self: end;
+  }
+
+  .language-switcher button {
+    min-width: 32px;
+    min-height: 28px;
+    font-size: 0.68rem;
   }
 
   .section-label {

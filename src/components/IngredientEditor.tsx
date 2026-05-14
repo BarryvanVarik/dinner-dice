@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import type { DishType } from "../data/dishTypes";
+import { getUiText, type LanguageCode, translateCategory, translateDish } from "../data/i18n";
 
 type IngredientEditorProps = {
   dishType: DishType;
+  language: LanguageCode;
   onSave: (updates: Record<string, string[]>) => void;
   onReset: () => void;
 };
 
-function IngredientEditor({ dishType, onSave, onReset }: IngredientEditorProps) {
+function IngredientEditor({ dishType, language, onSave, onReset }: IngredientEditorProps) {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const text = getUiText(language);
+  const dishLabel = translateDish(dishType.id, language).label;
 
   useEffect(() => {
     setDrafts(
@@ -39,19 +43,19 @@ function IngredientEditor({ dishType, onSave, onReset }: IngredientEditorProps) 
   return (
     <details className="ingredient-editor">
       <summary>
-        <span>Edit ingredient lists</span>
-        <span>{dishType.label}</span>
+        <span>{text.editIngredientLists}</span>
+        <span>{dishLabel}</span>
       </summary>
 
       <div className="editor-body">
         <p className="editor-note">
-          Add one ingredient per line. Changes are saved in this browser and used for future rolls.
+          {text.editorNote}
         </p>
 
         <div className="editor-grid">
           {dishType.categories.map((category) => (
             <label className="editor-field" key={category.id}>
-              <span>{category.label}</span>
+              <span>{translateCategory(category.id, category.label, language)}</span>
               <textarea
                 rows={5}
                 value={drafts[category.id] ?? ""}
@@ -63,10 +67,10 @@ function IngredientEditor({ dishType, onSave, onReset }: IngredientEditorProps) 
 
         <div className="editor-actions">
           <button className="secondary-button copy-button" type="button" onClick={handleSave}>
-            Save lists
+            {text.saveLists}
           </button>
           <button className="secondary-button" type="button" onClick={onReset}>
-            Reset this dish
+            {text.resetDish}
           </button>
         </div>
       </div>

@@ -1,4 +1,11 @@
 import type { Category, DishType } from "../data/dishTypes";
+import {
+  getUiText,
+  type LanguageCode,
+  translateCategory,
+  translateDish,
+  translateIngredient
+} from "../data/i18n";
 
 export type RolledCategory = {
   categoryId: string;
@@ -68,24 +75,35 @@ function capitalizeFirst(value: string) {
   return value ? `${value[0].toUpperCase()}${value.slice(1)}` : value;
 }
 
-function formatList(items: string[]) {
+function formatList(items: string[], language: LanguageCode = "en") {
   if (items.length <= 1) {
     return items[0] ?? "";
   }
 
+  const joinWord = language === "da" ? "og" : language === "nl" ? "en" : "and";
+
   if (items.length === 2) {
-    return `${items[0]} and ${items[1]}`;
+    return `${items[0]} ${joinWord} ${items[1]}`;
   }
 
-  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+  return `${items.slice(0, -1).join(", ")} ${joinWord} ${items[items.length - 1]}`;
 }
 
 function lowerList(items: string[]) {
   return formatList(items.map(lowercase));
 }
 
+function lowerTranslatedList(items: string[], language: LanguageCode) {
+  return formatList(items.map((item) => translateIngredient(item, language).toLowerCase()), language);
+}
+
 function displayList(items: string[]) {
   return items.length <= 1 ? items[0] ?? "" : capitalizeFirst(lowerList(items));
+}
+
+function displayTranslatedList(items: string[], language: LanguageCode) {
+  const translatedItems = items.map((item) => translateIngredient(item, language));
+  return translatedItems.length <= 1 ? translatedItems[0] ?? "" : capitalizeFirst(formatList(translatedItems, language));
 }
 
 function singularFood(value: string) {
@@ -147,6 +165,22 @@ function saladProteinName(value: string) {
   return value === "Feta plus seeds" ? "Feta and seed" : value;
 }
 
+function translatedRoll(rolls: RolledCategory[], categoryId: string, language: LanguageCode) {
+  return translateIngredient(getRoll(rolls, categoryId), language);
+}
+
+function translatedRollLower(rolls: RolledCategory[], categoryId: string, language: LanguageCode) {
+  return translatedRoll(rolls, categoryId, language).toLowerCase();
+}
+
+function translatedRollItems(rolls: RolledCategory[], categoryId: string, language: LanguageCode) {
+  return getRollItems(rolls, categoryId).map((item) => translateIngredient(item, language));
+}
+
+export function displayRollItem(roll: RolledCategory, language: LanguageCode) {
+  return displayTranslatedList(roll.items?.length ? roll.items : [roll.item], language);
+}
+
 function rollCategory(category: Category): RolledCategory {
   const items = pickRandomItems(category.options, category.pickCount ?? 1);
 
@@ -171,7 +205,8 @@ function rerollCategory(category: Category, blockedItems: string[]) {
 export function rollDish(
   dishType: DishType,
   previousResult: RollResult | null,
-  lockedCategories: Set<string>
+  lockedCategories: Set<string>,
+  language: LanguageCode = "en"
 ): RollResult {
   const previousRolls = toRollMap(previousResult);
   let rolls = dishType.categories.map((category) => {
@@ -188,43 +223,59 @@ export function rollDish(
 
   return {
     dishTypeId: dishType.id,
-    dishTypeLabel: dishType.label,
-    dishName: createDishName(dishType, rolls),
+    dishTypeLabel: translateDish(dishType.id, language).label,
+    dishName: createDishName(dishType, rolls, language),
     rolls,
-    instruction: createInstruction(dishType, rolls),
-    kidFriendlyTweak: createKidFriendlyTweak(dishType, rolls),
-    upgradeIdea: createUpgradeIdea(dishType, rolls)
+    instruction: createInstruction(dishType, rolls, language),
+    kidFriendlyTweak: createKidFriendlyTweak(dishType, rolls, language),
+    upgradeIdea: createUpgradeIdea(dishType, rolls, language)
   };
 }
 
-export function createCopyText(result: RollResult) {
-  const rolls = result.rolls.map((roll) => `- ${roll.label}: ${roll.item}`).join("\n");
+export function localizeResult(result: RollResult, dishType: DishType, language: LanguageCode): RollResult {
+  return {
+    ...result,
+    dishTypeLabel: translateDish(dishType.id, language).label,
+    dishName: createDishName(dishType, result.rolls, language),
+    instruction: createInstruction(dishType, result.rolls, language),
+    kidFriendlyTweak: createKidFriendlyTweak(dishType, result.rolls, language),
+    upgradeIdea: createUpgradeIdea(dishType, result.rolls, language)
+  };
+}
+
+export function createCopyText(result: RollResult, language: LanguageCode = "en") {
+  const text = getUiText(language);
+  const rolls = result.rolls
+    .map((roll) => `- ${translateCategory(roll.categoryId, roll.label, language)}: ${displayRollItem(roll, language)}`)
+    .join("\n");
 
   return [
-    `Dinner Dice result: ${result.dishName}`,
+    `${text.copyTitle}: ${result.dishName}`,
     "",
-    `Dish type: ${result.dishTypeLabel}`,
+    `${text.dishType}: ${result.dishTypeLabel}`,
     "",
-    "Rolls:",
+    `${text.rolls}:`,
     rolls,
     "",
-    "How to make it:",
+    `${text.howToMakeIt}:`,
     result.instruction,
     "",
-    "Kid-friendly tweak:",
+    `${text.kidFriendlyTweak}:`,
     result.kidFriendlyTweak,
     "",
-    "Upgrade idea:",
+    `${text.upgradeIdea}:`,
     result.upgradeIdea
   ].join("\n");
 }
 
-export function createShoppingListText(result: RollResult) {
+export function createShoppingListText(result: RollResult, language: LanguageCode = "en") {
   const ingredients = result.rolls.flatMap((roll) => roll.items?.length ? roll.items : [roll.item]);
-  const uniqueIngredients = Array.from(new Set(ingredients));
+  const uniqueIngredients = Array.from(new Set(ingredients))
+    .map((ingredient) => translateIngredient(ingredient, language));
+  const text = getUiText(language);
 
   return [
-    `Dinner Dice shopping list: ${result.dishName}`,
+    `${text.shoppingTitle}: ${result.dishName}`,
     "",
     ...uniqueIngredients.map((ingredient) => `- ${ingredient}`)
   ].join("\n");
@@ -304,7 +355,15 @@ function getCompatibilityRules(dishType: DishType): CompatibilityRule[] {
   }
 }
 
-function createDishName(dishType: DishType, rolls: RolledCategory[]) {
+function createDishName(dishType: DishType, rolls: RolledCategory[], language: LanguageCode) {
+  if (language === "nl") {
+    return createDutchDishName(dishType, rolls, language);
+  }
+
+  if (language === "da") {
+    return createDanishDishName(dishType, rolls, language);
+  }
+
   switch (dishType.id) {
     case "pasta": {
       const sauce = pastaSauceName(getRoll(rolls, "sauce-base"));
@@ -345,7 +404,67 @@ function createDishName(dishType: DishType, rolls: RolledCategory[]) {
   }
 }
 
-function createInstruction(dishType: DishType, rolls: RolledCategory[]) {
+function createDutchDishName(dishType: DishType, rolls: RolledCategory[], language: LanguageCode) {
+  switch (dishType.id) {
+    case "pasta":
+      return `${translateIngredient(pastaSauceName(getRoll(rolls, "sauce-base")), language)} ${translatedRollLower(rolls, "protein", language)} met ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} ${translatedRollLower(rolls, "pasta-shape", language)}`;
+    case "rice-wok":
+      return `${translatedRoll(rolls, "sauce", language)} ${translatedRollLower(rolls, "protein", language)} bowl met ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} en ${translatedRollLower(rolls, "base", language)}`;
+    case "stew":
+      return `${translatedRoll(rolls, "base", language)} stoof met ${translatedRollLower(rolls, "main-protein", language)}, ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}`;
+    case "soup":
+      return `${translatedRoll(rolls, "soup-base", language)} soep met ${translatedRollLower(rolls, "protein", language)}, ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}`;
+    case "salad":
+      return `${translateIngredient(saladProteinName(getRoll(rolls, "protein")), language)} salade met ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} en ${translatedRollLower(rolls, "crunch", language)}`;
+  }
+}
+
+function createDanishDishName(dishType: DishType, rolls: RolledCategory[], language: LanguageCode) {
+  switch (dishType.id) {
+    case "pasta":
+      return `${translateIngredient(pastaSauceName(getRoll(rolls, "sauce-base")), language)} ${translatedRollLower(rolls, "protein", language)} med ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} ${translatedRollLower(rolls, "pasta-shape", language)}`;
+    case "rice-wok":
+      return `${translatedRoll(rolls, "sauce", language)} ${translatedRollLower(rolls, "protein", language)} bowl med ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} og ${translatedRollLower(rolls, "base", language)}`;
+    case "stew":
+      return `${translatedRoll(rolls, "base", language)} gryderet med ${translatedRollLower(rolls, "main-protein", language)}, ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}`;
+    case "soup":
+      return `${translatedRoll(rolls, "soup-base", language)} suppe med ${translatedRollLower(rolls, "protein", language)}, ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}`;
+    case "salad":
+      return `${translateIngredient(saladProteinName(getRoll(rolls, "protein")), language)} salat med ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} og ${translatedRollLower(rolls, "crunch", language)}`;
+  }
+}
+
+function createInstruction(dishType: DishType, rolls: RolledCategory[], language: LanguageCode) {
+  if (language === "nl") {
+    switch (dishType.id) {
+      case "pasta":
+        return `Kook de ${translatedRollLower(rolls, "pasta-shape", language)}, maak een saus van ${translatedRollLower(rolls, "sauce-base", language)} met ${translatedRollLower(rolls, "protein", language)} en schep ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} erdoor. Werk af met ${translatedRollLower(rolls, "cheese-finish", language)} en ${translatedRollLower(rolls, "extra", language)}.`;
+      case "rice-wok":
+        return `Roerbak ${translatedRollLower(rolls, "protein", language)} met ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}, meng met ${translatedRollLower(rolls, "sauce", language)}, serveer op ${translatedRollLower(rolls, "base", language)} en maak af met ${translatedRollLower(rolls, "crunch-topping", language)} plus ${translatedRollLower(rolls, "extra", language)}.`;
+      case "stew":
+        return `Bak of fruit ${translatedRollLower(rolls, "main-protein", language)}, voeg ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}, ${translatedRollLower(rolls, "base", language)} en ${translatedRollLower(rolls, "flavor-direction", language)} toe en laat pruttelen. Geef body met ${translatedRollLower(rolls, "thickener-body", language)} en werk af met ${translatedRollLower(rolls, "finish", language)}.`;
+      case "soup":
+        return `Fruit ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}, voeg ${translatedRollLower(rolls, "protein", language)}, ${translatedRollLower(rolls, "soup-base", language)} en ${translatedRollLower(rolls, "flavor-direction", language)} toe en laat zacht koken. Maak voller met ${translatedRollLower(rolls, "body", language)} en werk af met ${translatedRollLower(rolls, "finish", language)}.`;
+      case "salad":
+        return `Begin met ${translatedRollLower(rolls, "base", language)}, voeg ${translatedRollLower(rolls, "carb-body", language)}, ${translatedRollLower(rolls, "protein", language)}, ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} en ${translatedRollLower(rolls, "crunch", language)} toe. Maak af met ${translatedRollLower(rolls, "dressing", language)} en ${translatedRollLower(rolls, "extra", language)}.`;
+    }
+  }
+
+  if (language === "da") {
+    switch (dishType.id) {
+      case "pasta":
+        return `Kog ${translatedRollLower(rolls, "pasta-shape", language)}, lav en sauce med ${translatedRollLower(rolls, "sauce-base", language)} og ${translatedRollLower(rolls, "protein", language)}, og vend ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} i. Top med ${translatedRollLower(rolls, "cheese-finish", language)} og ${translatedRollLower(rolls, "extra", language)}.`;
+      case "rice-wok":
+        return `Steg ${translatedRollLower(rolls, "protein", language)} med ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}, vend med ${translatedRollLower(rolls, "sauce", language)}, server over ${translatedRollLower(rolls, "base", language)}, og top med ${translatedRollLower(rolls, "crunch-topping", language)} plus ${translatedRollLower(rolls, "extra", language)}.`;
+      case "stew":
+        return `Brun eller blødgør ${translatedRollLower(rolls, "main-protein", language)}, tilsæt ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}, ${translatedRollLower(rolls, "base", language)} og ${translatedRollLower(rolls, "flavor-direction", language)}, og lad det simre. Giv fylde med ${translatedRollLower(rolls, "thickener-body", language)} og afslut med ${translatedRollLower(rolls, "finish", language)}.`;
+      case "soup":
+        return `Svits ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)}, tilsæt ${translatedRollLower(rolls, "protein", language)}, ${translatedRollLower(rolls, "soup-base", language)} og ${translatedRollLower(rolls, "flavor-direction", language)}, og lad det simre. Giv fylde med ${translatedRollLower(rolls, "body", language)} og afslut med ${translatedRollLower(rolls, "finish", language)}.`;
+      case "salad":
+        return `Start med ${translatedRollLower(rolls, "base", language)}, tilsæt ${translatedRollLower(rolls, "carb-body", language)}, ${translatedRollLower(rolls, "protein", language)}, ${lowerTranslatedList(getRollItems(rolls, "vegetables"), language)} og ${translatedRollLower(rolls, "crunch", language)}. Vend med ${translatedRollLower(rolls, "dressing", language)} og slut med ${translatedRollLower(rolls, "extra", language)}.`;
+    }
+  }
+
   switch (dishType.id) {
     case "pasta":
       return `Cook the ${lowercase(getRoll(rolls, "pasta-shape"))}, build a ${lowercase(getRoll(rolls, "sauce-base"))} sauce with ${lowercase(getRoll(rolls, "protein"))}, then fold in ${lowerList(getRollItems(rolls, "vegetables"))}. Finish with ${lowercase(getRoll(rolls, "cheese-finish"))} and ${lowercase(getRoll(rolls, "extra"))}.`;
@@ -364,7 +483,37 @@ function createInstruction(dishType: DishType, rolls: RolledCategory[]) {
   }
 }
 
-function createKidFriendlyTweak(dishType: DishType, rolls: RolledCategory[]) {
+function createKidFriendlyTweak(dishType: DishType, rolls: RolledCategory[], language: LanguageCode) {
+  if (language === "nl") {
+    switch (dishType.id) {
+      case "pasta":
+        return `Zet de ${translatedRollLower(rolls, "extra", language)} apart en maak de saus extra glad.`;
+      case "rice-wok":
+        return "Serveer de saus apart en houd pittige toppings los.";
+      case "stew":
+        return "Prak een paar groenten door de stoof om hem zachter en dikker te maken.";
+      case "soup":
+        return "Pureer een deel van de soep en zet sterkere toppings apart.";
+      case "salad":
+        return "Serveer als bouw-je-eigen bowl met de dressing apart.";
+    }
+  }
+
+  if (language === "da") {
+    switch (dishType.id) {
+      case "pasta":
+        return `Server ${translatedRollLower(rolls, "extra", language)} ved siden af, og gør saucen ekstra glat.`;
+      case "rice-wok":
+        return "Server saucen ved siden af, og hold stærke toppings separat.";
+      case "stew":
+        return "Mos et par grøntsager i retten for at gøre den mildere og tykkere.";
+      case "soup":
+        return "Blend en del af suppen glat, og server kraftige toppings ved siden af.";
+      case "salad":
+        return "Server som en byg-selv bowl med dressingen ved siden af.";
+    }
+  }
+
   switch (dishType.id) {
     case "pasta":
       return `Keep the ${getRoll(rolls, "extra").toLowerCase()} on the side and make the sauce extra smooth.`;
@@ -379,7 +528,37 @@ function createKidFriendlyTweak(dishType: DishType, rolls: RolledCategory[]) {
   }
 }
 
-function createUpgradeIdea(dishType: DishType, rolls: RolledCategory[]) {
+function createUpgradeIdea(dishType: DishType, rolls: RolledCategory[], language: LanguageCode) {
+  if (language === "nl") {
+    switch (dishType.id) {
+      case "pasta":
+        return `Rooster de ${translatedRollLower(rolls, "extra", language)} kort voor een betere afwerking.`;
+      case "rice-wok":
+        return "Voeg een zachtgekookt ei of snelle ingelegde komkommer toe voor contrast.";
+      case "stew":
+        return `Maak hem een dag eerder zodat ${translatedRollLower(rolls, "flavor-direction", language)} dieper smaakt.`;
+      case "soup":
+        return "Voeg geroosterde roggekruimels of een lepel zure room toe vlak voor serveren.";
+      case "salad":
+        return "Rooster of grill een ingredient voor een warmere maaltijdsalade.";
+    }
+  }
+
+  if (language === "da") {
+    switch (dishType.id) {
+      case "pasta":
+        return `Rist ${translatedRollLower(rolls, "extra", language)} kort for en bedre finish.`;
+      case "rice-wok":
+        return "Tilføj et blødkogt æg eller hurtigsyltet agurk for kontrast.";
+      case "stew":
+        return `Lav den dagen før, så ${translatedRollLower(rolls, "flavor-direction", language)} smagen bliver dybere.`;
+      case "soup":
+        return "Tilføj ristede rugbrødskrummer eller en skefuld cremefraiche lige før servering.";
+      case "salad":
+        return "Grill eller rist en ingrediens for en lunere aftenssalat.";
+    }
+  }
+
   switch (dishType.id) {
     case "pasta":
       return `Toast the ${getRoll(rolls, "extra").toLowerCase()} briefly for a restaurant-style finish.`;

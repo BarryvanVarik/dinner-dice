@@ -1,5 +1,6 @@
 import CategoryLock from "./CategoryLock";
 import type { DishType } from "../data/dishTypes";
+import { getUiText, type LanguageCode, translateDish } from "../data/i18n";
 import type { RollResult } from "../utils/roll";
 
 type RollPanelProps = {
@@ -7,6 +8,7 @@ type RollPanelProps = {
   result: RollResult | null;
   lockedCategories: Set<string>;
   isRolling: boolean;
+  language: LanguageCode;
   onRoll: () => void;
   onToggleLock: (categoryId: string) => void;
 };
@@ -16,9 +18,13 @@ function RollPanel({
   result,
   lockedCategories,
   isRolling,
+  language,
   onRoll,
   onToggleLock
 }: RollPanelProps) {
+  const text = getUiText(language);
+  const dishLabel = translateDish(dishType.id, language).label;
+
   function getRolledCategory(categoryId: string) {
     return result?.rolls.find((roll) => roll.categoryId === categoryId);
   }
@@ -27,11 +33,11 @@ function RollPanel({
     <section className="roll-panel" aria-labelledby="roll-panel-title">
       <div className="section-label">
         <span aria-hidden="true">2</span>
-        <h2 id="roll-panel-title">Roll categories</h2>
+        <h2 id="roll-panel-title">{text.rollCategories}</h2>
       </div>
 
       <p className="panel-note">
-        {dishType.label} rolls {dishType.categories.length} categories. Lock the parts you like, then roll the rest.
+        {text.rollPanelNote(dishLabel, dishType.categories.length)}
       </p>
 
       <div className="category-grid">
@@ -45,13 +51,14 @@ function RollPanel({
             rolledCategory={getRolledCategory(category.id)}
             isLocked={lockedCategories.has(category.id)}
             isRolling={isRolling && !lockedCategories.has(category.id)}
+            language={language}
             onToggleLock={onToggleLock}
           />
         ))}
       </div>
 
       <button className="roll-button" type="button" disabled={isRolling} onClick={onRoll}>
-        {isRolling ? "Rolling..." : result ? "Roll again" : "Roll dish"}
+        {isRolling ? text.rolling : result ? text.rollAgain : text.rollDish}
       </button>
     </section>
   );

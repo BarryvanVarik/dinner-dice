@@ -2,19 +2,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import DishSelector from "./components/DishSelector";
 import FavoriteResults from "./components/FavoriteResults";
 import IngredientEditor from "./components/IngredientEditor";
+import LanguageSelector from "./components/LanguageSelector";
 import ResultCard from "./components/ResultCard";
 import RollPanel from "./components/RollPanel";
 import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./data/dishTypes";
+import { getUiText, type LanguageCode } from "./data/i18n";
 import { initializeAnalytics, trackEvent } from "./utils/analytics";
-import { createCopyText, createShoppingListText, rollDish, type RollResult } from "./utils/roll";
+import { createCopyText, createShoppingListText, localizeResult, rollDish, type RollResult } from "./utils/roll";
 
 const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
 const FAVORITES_STORAGE_KEY = "dinnerDiceFavoritesV1";
+const LANGUAGE_STORAGE_KEY = "dinnerDiceLanguageV1";
 const ROLL_ANIMATION_MS = 1050;
 
 function App() {
   const [dishTypes, setDishTypes] = useState<DishType[]>(loadDishTypes);
   const [favorites, setFavorites] = useState<RollResult[]>(loadFavoriteResults);
+  const [language, setLanguage] = useState<LanguageCode>(loadLanguage);
   const [selectedDishId, setSelectedDishId] = useState<DishId>("pasta");
   const [result, setResult] = useState<RollResult | null>(null);
   const [lockedCategories, setLockedCategories] = useState<Set<string>>(new Set());
@@ -27,9 +31,23 @@ function App() {
     [dishTypes, selectedDishId]
   );
 
+  const resultDish = useMemo(
+    () => dishTypes.find((dishType) => dishType.id === result?.dishTypeId) ?? selectedDish,
+    [dishTypes, result?.dishTypeId, selectedDish]
+  );
+  const localizedResult = useMemo(
+    () => (result ? localizeResult(result, resultDish, language) : null),
+    [language, result, resultDish]
+  );
+  const text = getUiText(language);
+
   useEffect(() => {
     initializeAnalytics();
   }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   useEffect(() => {
     return () => {
@@ -49,6 +67,12 @@ function App() {
     trackEvent("Dish Selected", { dishType: dishId });
   }
 
+  function handleLanguageSelect(nextLanguage: LanguageCode) {
+    setLanguage(nextLanguage);
+    saveLanguage(nextLanguage);
+    setActionStatus("");
+  }
+
   function handleRoll() {
     if (isRolling) {
       return;
@@ -59,7 +83,7 @@ function App() {
     setIsRolling(true);
 
     rollTimerRef.current = window.setTimeout(() => {
-      setResult((currentResult) => rollDish(selectedDish, currentResult, lockedCategories));
+      setResult((currentResult) => rollDish(selectedDish, currentResult, lockedCategories, language));
       setIsRolling(false);
       rollTimerRef.current = null;
       trackEvent("Roll Dish", {
@@ -84,30 +108,30 @@ function App() {
   }
 
   async function handleCopy() {
-    if (!result) {
+    if (!localizedResult) {
       return;
     }
 
     try {
-      await copyText(createCopyText(result));
-      setActionStatus("Copied result.");
-      trackEvent("Copy Result", { dishType: result.dishTypeLabel });
+      await copyText(createCopyText(localizedResult, language));
+      setActionStatus(text.copiedResult);
+      trackEvent("Copy Result", { dishType: localizedResult.dishTypeLabel });
     } catch {
-      setActionStatus("Copy failed.");
+      setActionStatus(text.copyFailed);
     }
   }
 
   async function handleCopyShoppingList() {
-    if (!result) {
+    if (!localizedResult) {
       return;
     }
 
     try {
-      await copyText(createShoppingListText(result));
-      setActionStatus("Copied shopping list.");
-      trackEvent("Shopping List", { dishType: result.dishTypeLabel });
+      await copyText(createShoppingListText(localizedResult, language));
+      setActionStatus(text.copiedShoppingList);
+      trackEvent("Shopping List", { dishType: localizedResult.dishTypeLabel });
     } catch {
-      setActionStatus("Copy failed.");
+      setActionStatus(text.copyFailed);
     }
   }
 
@@ -123,8 +147,8 @@ function App() {
 
     setFavorites(nextFavorites);
     saveFavoriteResults(nextFavorites);
-    setActionStatus("Saved favorite.");
-    trackEvent("Save Favorite", { dishType: result.dishTypeLabel });
+    setActionStatus(text.savedFavorite);
+    trackEvent("Save Favorite", { dishType: localizedResult?.dishTypeLabel ?? result.dishTypeLabel });
   }
 
   function handleLoadFavorite(favorite: RollResult) {
@@ -192,23 +216,35 @@ function App() {
         <div>
           <p className="eyebrow">Dinner Dice</p>
           <h1>Dinner Dice</h1>
-          <p className="subtitle">Roll your way into dinner.</p>
+          <p className="subtitle">{text.subtitle}</p>
           <div className="hero-chips" aria-hidden="true">
-            <span>Fresh</span>
-            <span>Simple</span>
-            <span>Cozy</span>
+            {text.chips.map((chip) => (
+              <span key={chip}>{chip}</span>
+            ))}
           </div>
         </div>
-        <div className={`dice-badge${isRolling ? " is-rolling" : ""}`} aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
+        <div className="hero-side">
+          <LanguageSelector
+            language={language}
+            label={text.languageLabel}
+            onChange={handleLanguageSelect}
+          />
+          <div className={`dice-badge${isRolling ? " is-rolling" : ""}`} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
       </header>
 
-      <DishSelector dishTypes={dishTypes} selectedDishId={selectedDishId} onSelect={handleDishSelect} />
+      <DishSelector
+        dishTypes={dishTypes}
+        selectedDishId={selectedDishId}
+        language={language}
+        onSelect={handleDishSelect}
+      />
 
       <div className="workspace">
         <RollPanel
@@ -216,15 +252,17 @@ function App() {
           result={result}
           lockedCategories={lockedCategories}
           isRolling={isRolling}
+          language={language}
           onRoll={handleRoll}
           onToggleLock={handleToggleLock}
         />
 
         <ResultCard
-          result={result}
+          result={localizedResult}
           actionStatus={actionStatus}
           isRolling={isRolling}
           isFavorite={result ? favorites.some((favorite) => getResultKey(favorite) === getResultKey(result)) : false}
+          language={language}
           onRollAgain={handleRoll}
           onCopy={handleCopy}
           onCopyShoppingList={handleCopyShoppingList}
@@ -234,12 +272,14 @@ function App() {
 
       <FavoriteResults
         favorites={favorites}
+        language={language}
         onLoad={handleLoadFavorite}
         onRemove={handleRemoveFavorite}
       />
 
       <IngredientEditor
         dishType={selectedDish}
+        language={language}
         onSave={handleSaveIngredients}
         onReset={handleResetSelectedDish}
       />
@@ -284,6 +324,15 @@ function loadFavoriteResults() {
 
 function saveFavoriteResults(favorites: RollResult[]) {
   localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+}
+
+function loadLanguage(): LanguageCode {
+  const storedValue = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  return storedValue === "nl" || storedValue === "da" || storedValue === "en" ? storedValue : "en";
+}
+
+function saveLanguage(language: LanguageCode) {
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
 }
 
 async function copyText(value: string) {
