@@ -359,11 +359,34 @@ function saveFavoriteResults(favorites: RollResult[]) {
 
 function loadLanguage(): LanguageCode {
   const storedValue = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return storedValue === "nl" || storedValue === "da" || storedValue === "en" ? storedValue : "en";
+
+  if (isSupportedLanguage(storedValue)) {
+    return storedValue;
+  }
+
+  return detectBrowserLanguage();
 }
 
 function saveLanguage(language: LanguageCode) {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+}
+
+function detectBrowserLanguage(): LanguageCode {
+  const browserLanguages = navigator.languages?.length ? navigator.languages : [navigator.language];
+
+  for (const browserLanguage of browserLanguages) {
+    const languageCode = browserLanguage.toLowerCase().split("-")[0];
+
+    if (isSupportedLanguage(languageCode)) {
+      return languageCode;
+    }
+  }
+
+  return "en";
+}
+
+function isSupportedLanguage(value: string | null | undefined): value is LanguageCode {
+  return value === "nl" || value === "da" || value === "en";
 }
 
 async function copyText(value: string) {
