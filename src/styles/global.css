@@ -80,6 +80,28 @@ dd {
   justify-items: end;
 }
 
+.hero-brand {
+  min-width: 0;
+}
+
+.brand-logo {
+  display: block;
+  width: min(520px, 100%);
+  height: auto;
+  margin: 0 auto;
+  mix-blend-mode: multiply;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .language-switcher {
   display: inline-flex;
   padding: 4px;
@@ -855,8 +877,9 @@ textarea:focus-visible {
     margin-top: 10px;
   }
 
-  .hero h1 {
-    font-size: clamp(2.45rem, 14vw, 4.2rem);
+  .brand-logo {
+    width: min(310px, 100%);
+    margin: 0;
   }
 
   .subtitle {

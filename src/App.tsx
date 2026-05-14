@@ -40,6 +40,7 @@ function App() {
     [language, result, resultDish]
   );
   const text = getUiText(language);
+  const logoPath = `${import.meta.env.BASE_URL}images/dishroll_logo.png`;
 
   useEffect(() => {
     initializeAnalytics();
@@ -213,9 +214,15 @@ function App() {
   return (
     <main className="app-shell">
       <header className="hero">
-        <div>
-          <p className="eyebrow">dishtoss</p>
-          <h1>dishtoss</h1>
+        <div className="hero-brand">
+          <img
+            className="brand-logo"
+            src={logoPath}
+            alt="dishtoss"
+            width="2508"
+            height="627"
+          />
+          <h1 className="visually-hidden">dishtoss</h1>
           <p className="subtitle">{text.subtitle}</p>
           <div className="hero-chips" aria-hidden="true">
             {text.chips.map((chip) => (
