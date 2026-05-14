@@ -10,7 +10,7 @@ export const languages: { code: LanguageCode; label: string }[] = [
 
 export const uiText = {
   en: {
-    subtitle: "Roll your way into dinner.",
+    subtitle: "Toss your way into dinner.",
     chips: ["Fresh", "Simple", "Cozy"],
     languageLabel: "Language",
     pickDishMode: "Pick a dish mode",
@@ -45,13 +45,13 @@ export const uiText = {
     rollToReveal: "Roll to reveal",
     rollsOf: (pickCount: number, optionCount: number) => `Rolls ${pickCount} of ${optionCount}`,
     options: (count: number) => `${count} options`,
-    copyTitle: "Dinner Dice result",
+    copyTitle: "dishtoss result",
     dishType: "Dish type",
     rolls: "Rolls",
-    shoppingTitle: "Dinner Dice shopping list"
+    shoppingTitle: "dishtoss shopping list"
   },
   nl: {
-    subtitle: "Rol je avondeten bij elkaar.",
+    subtitle: "Hussel je avondeten bij elkaar.",
     chips: ["Vers", "Simpel", "Gezellig"],
     languageLabel: "Taal",
     pickDishMode: "Kies een gerecht",
@@ -86,13 +86,13 @@ export const uiText = {
     rollToReveal: "Rol om te onthullen",
     rollsOf: (pickCount: number, optionCount: number) => `Rolt ${pickCount} van ${optionCount}`,
     options: (count: number) => `${count} opties`,
-    copyTitle: "Dinner Dice resultaat",
+    copyTitle: "dishtoss resultaat",
     dishType: "Gerecht",
     rolls: "Rollen",
-    shoppingTitle: "Dinner Dice boodschappenlijst"
+    shoppingTitle: "dishtoss boodschappenlijst"
   },
   da: {
-    subtitle: "Rul dig frem til aftensmaden.",
+    subtitle: "Kast dig frem til aftensmaden.",
     chips: ["Frisk", "Nemt", "Hyggeligt"],
     languageLabel: "Sprog",
     pickDishMode: "Vælg ret",
@@ -127,10 +127,10 @@ export const uiText = {
     rollToReveal: "Rul for at afsløre",
     rollsOf: (pickCount: number, optionCount: number) => `Ruller ${pickCount} af ${optionCount}`,
     options: (count: number) => `${count} muligheder`,
-    copyTitle: "Dinner Dice resultat",
+    copyTitle: "dishtoss resultat",
     dishType: "Ret",
     rolls: "Rul",
-    shoppingTitle: "Dinner Dice indkøbsliste"
+    shoppingTitle: "dishtoss indkøbsliste"
   }
 } satisfies Record<LanguageCode, Record<string, unknown>>;
 

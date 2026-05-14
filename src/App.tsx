@@ -214,8 +214,8 @@ function App() {
     <main className="app-shell">
       <header className="hero">
         <div>
-          <p className="eyebrow">Dinner Dice</p>
-          <h1>Dinner Dice</h1>
+          <p className="eyebrow">dishtoss</p>
+          <h1>dishtoss</h1>
           <p className="subtitle">{text.subtitle}</p>
           <div className="hero-chips" aria-hidden="true">
             {text.chips.map((chip) => (

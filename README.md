@@ -1,10 +1,10 @@
-# Dinner Dice
+# dishtoss
 
 A responsive React and TypeScript dinner randomizer for GitHub Pages.
 
 ## Languages
 
-Dinner Dice supports English, Dutch, and Danish. The selected language is saved in the browser, and the recipe idea, category labels, action buttons, copy text, and shopping list follow that language.
+dishtoss supports English, Dutch, and Danish. The selected language is saved in the browser, and the recipe idea, category labels, action buttons, copy text, and shopping list follow that language.
 
 ## Run locally
 
