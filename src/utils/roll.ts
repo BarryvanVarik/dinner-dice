@@ -232,6 +232,38 @@ export function rollDish(
   };
 }
 
+export function createAndreasResult(dishType: DishType, language: LanguageCode = "en"): RollResult {
+  const presetItems: Record<string, string[]> = {
+    "pasta-shape": ["Spaghetti"],
+    "sauce-base": ["Cream cheese"],
+    protein: ["Shrimp"],
+    vegetables: ["Red onion", "Peas"],
+    "cheese-finish": ["Aged cheese"],
+    extra: ["Parsley"]
+  };
+
+  const rolls = dishType.categories.map((category) => {
+    const items = presetItems[category.id] ?? [category.options[0]];
+
+    return {
+      categoryId: category.id,
+      label: category.label,
+      item: displayList(items),
+      items
+    };
+  });
+
+  return {
+    dishTypeId: dishType.id,
+    dishTypeLabel: translateDish(dishType.id, language).label,
+    dishName: createDishName(dishType, rolls, language),
+    rolls,
+    instruction: createInstruction(dishType, rolls, language),
+    kidFriendlyTweak: createKidFriendlyTweak(dishType, rolls, language),
+    upgradeIdea: createUpgradeIdea(dishType, rolls, language)
+  };
+}
+
 export function localizeResult(result: RollResult, dishType: DishType, language: LanguageCode): RollResult {
   return {
     ...result,

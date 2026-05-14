@@ -516,6 +516,24 @@ dd {
   text-transform: uppercase;
 }
 
+.roll-actions-primary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.andreas-button {
+  min-width: 96px;
+  min-height: 58px;
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--olive);
+  background: #fffdf8;
+  font-weight: 900;
+}
+
 .result-card {
   position: sticky;
   top: 18px;
@@ -993,6 +1011,16 @@ textarea:focus-visible {
   .roll-button {
     min-height: 52px;
     margin-top: 10px;
+  }
+
+  .roll-actions-primary {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .andreas-button {
+    min-height: 42px;
+    margin-top: 0;
   }
 
   .empty-state {

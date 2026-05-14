@@ -10,6 +10,7 @@ type RollPanelProps = {
   isRolling: boolean;
   language: LanguageCode;
   onRoll: () => void;
+  onAndreas: () => void;
   onToggleLock: (categoryId: string) => void;
 };
 
@@ -20,6 +21,7 @@ function RollPanel({
   isRolling,
   language,
   onRoll,
+  onAndreas,
   onToggleLock
 }: RollPanelProps) {
   const text = getUiText(language);
@@ -57,9 +59,14 @@ function RollPanel({
         ))}
       </div>
 
-      <button className="roll-button" type="button" disabled={isRolling} onClick={onRoll}>
-        {isRolling ? text.rolling : result ? text.rollAgain : text.rollDish}
-      </button>
+      <div className="roll-actions-primary">
+        <button className="roll-button" type="button" disabled={isRolling} onClick={onRoll}>
+          {isRolling ? text.rolling : result ? text.rollAgain : text.rollDish}
+        </button>
+        <button className="andreas-button" type="button" disabled={isRolling} onClick={onAndreas}>
+          Andreas
+        </button>
+      </div>
     </section>
   );
 }

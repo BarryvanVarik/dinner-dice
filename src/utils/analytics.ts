@@ -1,6 +1,7 @@
 type PlausibleEventName =
   | "Dish Selected"
   | "Roll Dish"
+  | "Andreas Button"
   | "Copy Result"
   | "Shopping List"
   | "Save Favorite";

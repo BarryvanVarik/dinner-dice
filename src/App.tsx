@@ -8,7 +8,14 @@ import RollPanel from "./components/RollPanel";
 import { dishTypes as defaultDishTypes, type DishId, type DishType } from "./data/dishTypes";
 import { getUiText, type LanguageCode } from "./data/i18n";
 import { initializeAnalytics, trackEvent } from "./utils/analytics";
-import { createCopyText, createShoppingListText, localizeResult, rollDish, type RollResult } from "./utils/roll";
+import {
+  createAndreasResult,
+  createCopyText,
+  createShoppingListText,
+  localizeResult,
+  rollDish,
+  type RollResult
+} from "./utils/roll";
 
 const INGREDIENT_STORAGE_KEY = "dinnerDiceDishTypesV2";
 const FAVORITES_STORAGE_KEY = "dinnerDiceFavoritesV1";
@@ -106,6 +113,22 @@ function App() {
 
       return nextLocks;
     });
+  }
+
+  function handleAndreasRoll() {
+    clearPendingRoll();
+    const pastaDish = dishTypes.find((dishType) => dishType.id === "pasta");
+
+    if (!pastaDish) {
+      return;
+    }
+
+    setSelectedDishId("pasta");
+    setResult(createAndreasResult(pastaDish, language));
+    setLockedCategories(new Set());
+    setActionStatus("");
+    setIsRolling(false);
+    trackEvent("Andreas Button");
   }
 
   async function handleCopy() {
@@ -261,6 +284,7 @@ function App() {
           isRolling={isRolling}
           language={language}
           onRoll={handleRoll}
+          onAndreas={handleAndreasRoll}
           onToggleLock={handleToggleLock}
         />
 
