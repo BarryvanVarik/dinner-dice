@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">dishtoss social preview</title>
+  <desc id="desc">A minimal logo of a bowl and dice with the text dishtoss.</desc>
+  <rect width="1200" height="630" fill="#f6f2ec"/>
+  <ellipse cx="370" cy="470" rx="180" ry="34" fill="#ece0cf"/>
+  <path d="M160 330c45-65 410-65 455 0 10 16 6 42-10 105-24 91-96 145-218 145s-194-54-218-145c-16-63-20-89-9-105Z" fill="#d66c42"/>
+  <path d="M300 445c26 24 61 24 87 0" stroke="#f6f2ec" stroke-width="16" stroke-linecap="round" fill="none"/>
+  <circle cx="390" cy="428" r="10" fill="#f6f2ec"/>
+  <path d="M330 164a37 37 0 0 1 53 0l92 92a37 37 0 0 1 0 53l-92 92a37 37 0 0 1-53 0l-92-92a37 37 0 0 1 0-53Z" fill="#f0dec6" transform="rotate(-15 360 282)"/>
+  <circle cx="304" cy="232" r="14" fill="#333"/>
+  <circle cx="375" cy="211" r="14" fill="#333"/>
+  <circle cx="340" cy="273" r="14" fill="#333"/>
+  <circle cx="305" cy="326" r="14" fill="#333"/>
+  <path d="M388 304c15-20 42-6 42 20 0 25-24 45-42 60-18-15-42-35-42-60 0-26 27-40 42-20Z" fill="#d66c42"/>
+  <path d="M202 297c26-52 59-89 101-115" stroke="#7c7a39" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M508 369c16 20 21 49 11 75" stroke="#7c7a39" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <text x="650" y="292" font-size="116" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-weight="700" fill="#2f2f2f">dishtoss</text>
+  <text x="650" y="366" font-size="40" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" fill="#4a4a4a">Toss ingredient ideas for dinner inspiration</text>
+</svg>
